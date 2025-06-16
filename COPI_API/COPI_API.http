@@ -1,0 +1,6 @@
+@COPI_API_HostAddress = http://localhost:5182
+
+GET {{COPI_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

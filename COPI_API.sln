@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COPI_API", "COPI_API\COPI_API.csproj", "{ADEA7ABA-76CD-4046-BD9D-7C7CE445F103}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ADEA7ABA-76CD-4046-BD9D-7C7CE445F103}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADEA7ABA-76CD-4046-BD9D-7C7CE445F103}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADEA7ABA-76CD-4046-BD9D-7C7CE445F103}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADEA7ABA-76CD-4046-BD9D-7C7CE445F103}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3EB29169-DE95-416C-BA7E-D3DE7D2C24E2}
+	EndGlobalSection
+EndGlobal
