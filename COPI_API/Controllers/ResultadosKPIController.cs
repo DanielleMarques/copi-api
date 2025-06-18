@@ -174,7 +174,7 @@ namespace COPI_API.Controllers
                                 UnidadeKPIId = unidade.Id,
                                 KPIId = kpi.Id,
                                 CicloId = ciclo.Id,
-                                Status = "NAO",
+                                Status = null,
                                 Prova = null,
                                 AvaliacaoEscrita = null,
                                 DataRegistro = DateTime.UtcNow

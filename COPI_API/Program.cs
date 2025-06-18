@@ -1,15 +1,18 @@
 using COPI_API.Models;
 using COPI_API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Conexão com MySQL
+// 1. Conexão com MySQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
-// Add services to the container.
+// 2. CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -18,6 +21,7 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod());
 });
 
+// 3. Controllers e JSON
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -25,15 +29,48 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.WriteIndented = true;
     });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// 4. Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// 5. Injeção de Serviços
 builder.Services.AddScoped<AvaliacaoService>();
 
+// 6. Autenticação JWT
+var chaveJwt = builder.Configuration["Jwt:Key"] ?? "sua_chave_super_secreta";
+var key = Encoding.ASCII.GetBytes(chaveJwt);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = true;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+// 7. Autorização baseada em Roles
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Gestor", policy => policy.RequireRole("Gestor"));
+    options.AddPolicy("UsuarioPlus", policy => policy.RequireRole("UsuarioPlus"));
+    options.AddPolicy("Usuario", policy => policy.RequireRole("Usuario"));
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -44,36 +81,10 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
+app.UseAuthentication(); // Importante
 app.UseAuthorization();
 
 app.MapControllers();
-//using (var scope = app.Services.CreateScope())
-//{
-//    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-//    var unidadesKPI = await context.UnidadesKPI
-//        .Include(uk => uk.Unidade)
-//        .Include(uk => uk.KPI)
-//        .ToListAsync();
-
-//    foreach (var unidadeKPI in unidadesKPI)
-//    {
-//        bool existe = await context.ResultadosKPI.AnyAsync(r =>
-//            r.KPI!.Id == unidadeKPI.KPIId && r.UnidadeKPIId == unidadeKPI.Id);
-
-//        if (!existe)
-//        {
-//            context.ResultadosKPI.Add(new ResultadoKPI
-//            {
-//                KPIId = unidadeKPI.KPIId,
-//                UnidadeKPIId = unidadeKPI.Id,
-//                Status = "NAO",
-//                DataRegistro = DateTime.UtcNow
-//            });
-//        }
-//    }
-
-//    await context.SaveChangesAsync();
-//}
 
 app.Run();
+

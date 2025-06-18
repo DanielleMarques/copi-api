@@ -12,6 +12,8 @@
         public Servidor? Servidor { get; set; }
         public string? SEI { get; set; }
 
+        
+
         public List<ResultadoKPI>? Resultados { get; set; }
     }
 }

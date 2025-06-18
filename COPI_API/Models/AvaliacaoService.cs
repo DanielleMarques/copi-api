@@ -55,7 +55,7 @@ namespace COPI_API.Services
 
                     // Soma pontuação dos KPIs com status SIM ou NAO_APLICAVEL
                     decimal somaPontuacao = resultadosPorEixoENivel
-                        .Where(r => r.Status == "SIM" || r.Status == "NAO_APLICAVEL")
+                        .Where(r => r.Status == "SIM" || r.Status == "NAO APLICAVEL")
                         .Sum(r => (decimal)(r.KPI?.Pontuacao ?? 0));
 
                     // Aplica o peso do eixo
@@ -70,7 +70,7 @@ namespace COPI_API.Services
 
                 // Verifica se todos os KPIs do nível foram atingidos (SIM ou NAO_APLICAVEL)
                 atingiuNivel[nivel.Nome!] = kpisDoNivel
-                    .All(r => r.Status == "SIM" || r.Status == "NAO_APLICAVEL");
+                    .All(r => r.Status == "SIM" || r.Status == "NAO APLICAVEL");
             }
 
             // Cálculo da nota total ponderada (IM-PIBP)
@@ -105,7 +105,7 @@ namespace COPI_API.Services
             {
                 NomeKPI = r.KPI?.Nome ?? "KPI Desconhecido",
                 Status = r.Status,
-                Pontuacao = (r.Status == "SIM" || r.Status == "NAO_APLICAVEL")
+                Pontuacao = (r.Status == "SIM" || r.Status == "NAO APLICAVEL")
                     ? ((decimal)(r.KPI?.Pontuacao ?? 0) * (r.KPI?.Eixo?.Peso ?? 1) * (r.KPI?.Nivel?.Valor ?? 1))
                     : 0,
                 Prova = r.Prova,
