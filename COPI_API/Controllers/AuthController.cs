@@ -1,5 +1,6 @@
 ﻿using COPI_API.Models;
 using COPI_API.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -36,7 +37,7 @@ namespace COPI_API.Controllers
             return Ok(new
             {
                 token,
-                role = "Servidor", // Se quiser expandir para roles diferentes, pode usar um campo na tabela
+                role = servidor.Role,
                 nome = servidor.Nome,
                 email = servidor.Email
             });
@@ -45,15 +46,23 @@ namespace COPI_API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
         {
+            // Verifica se o e-mail já existe
             if (await _context.Servidores.AnyAsync(s => s.Email == dto.Email))
                 return BadRequest("Já existe um usuário com este email.");
 
+            // Verifica se a divisão informada existe
+            var divisaoExiste = await _context.Divisoes.AnyAsync(d => d.Id == dto.DivisaoId);
+            if (!divisaoExiste)
+                return BadRequest("A divisão informada não existe.");
+
+            // Cria o servidor
             var servidor = new Servidor
             {
                 Nome = dto.Nome,
                 Email = dto.Email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-                Role = "UsuarioComum"
+                Role = "Usuario",
+                DivisaoId = dto.DivisaoId 
             };
 
             _context.Servidores.Add(servidor);
@@ -62,13 +71,11 @@ namespace COPI_API.Controllers
             return Ok("Servidor registrado com sucesso.");
         }
 
+
         [HttpPost("promover")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> PromoverUsuario([FromBody] PromoverDTO dto)
         {
-            var solicitanteRole = User.FindFirst(ClaimTypes.Role)?.Value;
-            if (solicitanteRole != "Admin")
-                return Forbid("Apenas administradores podem promover usuários.");
-
             var servidor = await _context.Servidores.FirstOrDefaultAsync(s => s.Email == dto.Email);
             if (servidor == null)
                 return NotFound("Usuário não encontrado.");
@@ -80,6 +87,162 @@ namespace COPI_API.Controllers
             return Ok($"Usuário {servidor.Nome} promovido para {dto.NovaRole}.");
         }
 
+        [HttpPost("alterar-senha")]
+        [Authorize]
+        public async Task<IActionResult> AlterarSenha([FromBody] AlterarSenhaDTO dto)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var servidor = await _context.Servidores.FirstOrDefaultAsync(s => s.Email == email);
+            if (servidor == null)
+                return NotFound("Usuário não encontrado.");
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.SenhaAtual, servidor.PasswordHash))
+                return BadRequest("Senha atual incorreta.");
+
+            servidor.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NovaSenha);
+            _context.Servidores.Update(servidor);
+            await _context.SaveChangesAsync();
+
+            return Ok("Senha alterada com sucesso.");
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetMeuPerfil()
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var servidor = await _context.Servidores
+                .Include(s => s.Divisao)
+                .FirstOrDefaultAsync(s => s.Email == email);
+
+            if (servidor == null) return NotFound();
+
+            return Ok(new ServidorDTO
+            {
+                Id = servidor.Id,
+                Nome = servidor.Nome,
+                Email = servidor.Email,
+                DivisaoId = servidor.DivisaoId,
+                Celular = servidor.Celular,
+                Status = servidor.Status,
+                CargoOuFuncao = servidor.CargoOuFuncao,
+                PontoSei = servidor.PontoSei,
+                ChefiaImediata = servidor.ChefiaImediata,
+                RF = servidor.RF,
+                HorarioEntrada = servidor.HorarioEntrada,
+                HorarioSaida = servidor.HorarioSaida,
+                NomeDivisao = servidor.Divisao?.Nome
+            });
+        }
+
+        [HttpPut("me")]
+        [Authorize]
+        public async Task<IActionResult> AtualizarMeuPerfil([FromBody] ServidorDTO dados)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var servidor = await _context.Servidores.FirstOrDefaultAsync(s => s.Email == email);
+
+            if (servidor == null) return NotFound();
+
+            servidor.Nome = dados.Nome;
+            servidor.Celular = dados.Celular;
+            servidor.Status = dados.Status;
+            servidor.CargoOuFuncao = dados.CargoOuFuncao;
+            servidor.PontoSei = dados.PontoSei;
+            servidor.ChefiaImediata = dados.ChefiaImediata;
+            servidor.RF = dados.RF;
+            servidor.HorarioEntrada = dados.HorarioEntrada;
+            servidor.HorarioSaida = dados.HorarioSaida;
+            servidor.DivisaoId = dados.DivisaoId;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpGet("todos")]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetTodosServidores()
+        {
+            var servidores = await _context.Servidores
+                .Include(s => s.Divisao)
+                .Select(s => new ServidorDTO
+                {
+                    Id = s.Id,
+                    Nome = s.Nome,
+                    Email = s.Email,
+                    DivisaoId = s.DivisaoId,
+                    Role = s.Role,
+                    Celular = s.Celular,
+                    Status = s.Status,
+                    CargoOuFuncao = s.CargoOuFuncao,
+                    PontoSei = s.PontoSei,
+                    ChefiaImediata = s.ChefiaImediata,
+                    RF = s.RF,
+                    HorarioEntrada = s.HorarioEntrada,
+                    HorarioSaida = s.HorarioSaida,
+                    NomeDivisao = s.Divisao.Nome
+                })
+                .ToListAsync();
+
+            return Ok(servidores);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteServidor(int id)
+        {
+            var servidor = await _context.Servidores.FindAsync(id);
+            if (servidor == null)
+                return NotFound();
+
+            _context.Servidores.Remove(servidor);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPut("me/dados-profissionais")]
+        [Authorize]
+        public async Task<IActionResult> AtualizarDadosProfissionais([FromBody] ServidorDadosProfissionaisDTO dados)
+        {
+            var email = User.FindFirstValue(ClaimTypes.Email);
+            var servidor = await _context.Servidores.FirstOrDefaultAsync(s => s.Email == email);
+
+            if (servidor == null) return NotFound();
+
+            servidor.Celular = dados.Celular;
+            servidor.Status = dados.Status;
+            servidor.CargoOuFuncao = dados.CargoOuFuncao;
+            servidor.PontoSei = dados.PontoSei;
+            servidor.ChefiaImediata = dados.ChefiaImediata;
+            servidor.RF = dados.RF;
+            servidor.HorarioEntrada = dados.HorarioEntrada;
+            servidor.HorarioSaida = dados.HorarioSaida;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Dados profissionais atualizados com sucesso.");
+        }
+
+        [HttpPost("resetar-senha/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ResetarSenha(int id)
+        {
+            var servidor = await _context.Servidores.FindAsync(id);
+            if (servidor == null)
+                return NotFound("Servidor não encontrado.");
+
+            string senhaPadrao = "Trocar123!";
+            servidor.PasswordHash = BCrypt.Net.BCrypt.HashPassword(senhaPadrao);
+
+            _context.Servidores.Update(servidor);
+            await _context.SaveChangesAsync();
+
+            return Ok($"Senha do usuário {servidor.Nome} foi redefinida para a senha padrão.");
+        }
+
+
+
         private string GenerateJwtToken(Servidor servidor)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -89,7 +252,7 @@ namespace COPI_API.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier, servidor.Id.ToString()),
                 new Claim(ClaimTypes.Email, servidor.Email ?? string.Empty),
-                new Claim(ClaimTypes.Role, "Servidor")
+                new Claim(ClaimTypes.Role, servidor.Role)
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -104,4 +267,3 @@ namespace COPI_API.Controllers
         }
     }
 }
-

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Models/Servidor.cs
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace COPI_API.Models
@@ -9,18 +10,19 @@ namespace COPI_API.Models
         public int Id { get; set; }
 
         // Identificação
-        public string? Nome { get; set; }
+        [Required]
+        public string Nome { get; set; } = string.Empty;
 
-        [EmailAddress]
-        public string? Email { get; set; }
+        [Required, EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string? UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
 
         [Required]
-        public string? PasswordHash { get; set; }
+        public string PasswordHash { get; set; } = string.Empty;
 
-        public string Role { get; set; } = "Usuario"; // padrão
+        public string Role { get; set; } = "Usuario";
 
         // Dados de Contato e Funcionamento
         public string? Celular { get; set; }
@@ -33,13 +35,14 @@ namespace COPI_API.Models
         public string? HorarioSaida { get; set; }
 
         // Relacionamento
+        [ForeignKey("Divisao")]
         public int DivisaoId { get; set; }
         public Divisao? Divisao { get; set; }
 
         public ICollection<UnidadeKPI>? UnidadesKpiResponsaveis { get; set; }
 
-        // Auditoria (opcional)
-        public DateTime DataCriacao { get; set; } = DateTime.Now;
+        // Auditoria
+        public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
         public DateTime? UltimoAcesso { get; set; }
     }
 }

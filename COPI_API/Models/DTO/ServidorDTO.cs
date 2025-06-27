@@ -3,9 +3,10 @@
     public class ServidorDTO
     {
         public int Id { get; set; }
-        public string? Nome { get; set; }
-        public string? Email { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
         public int DivisaoId { get; set; }
+        public string? Role { get; set; }
         public string? Celular { get; set; }
         public string? Status { get; set; }
         public string? CargoOuFuncao { get; set; }
@@ -16,5 +17,4 @@
         public string? HorarioSaida { get; set; }
         public string? NomeDivisao { get; set; }
     }
-
 }
