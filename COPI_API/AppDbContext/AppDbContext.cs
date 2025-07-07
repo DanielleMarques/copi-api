@@ -17,6 +17,7 @@ namespace COPI_API.Models
         public DbSet<ResultadoKPI> ResultadosKPI { get; set; }
         public DbSet<Servidor> Servidores { get; set; }
         public DbSet<Divisao> Divisoes { get; set; }
+        public DbSet<StatusPIBP> StatusPIBP { get; set; }
 
     }
 }
