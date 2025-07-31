@@ -18,6 +18,26 @@ namespace COPI_API.Models
         public DbSet<Servidor> Servidores { get; set; }
         public DbSet<Divisao> Divisoes { get; set; }
         public DbSet<StatusPIBP> StatusPIBP { get; set; }
+        public DbSet<Meta> Metas { get; set; }
+        public DbSet<Tarefa> Tarefas { get; set; }
+        public DbSet<AcaoEstrategica> AcoesEstrategicas { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            // Relação Meta -> AcoesEstrategicas
+            modelBuilder.Entity<Meta>()
+                .HasMany(m => m.AcoesEstrategicas)
+                .WithOne(a => a.Meta)
+                .HasForeignKey(a => a.MetaId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relação AcaoEstrategica -> Tarefas
+            modelBuilder.Entity<AcaoEstrategica>()
+                .HasMany(a => a.Tarefas)
+                .WithOne(t => t.AcaoEstrategica)
+                .HasForeignKey(t => t.AcaoEstrategicaId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

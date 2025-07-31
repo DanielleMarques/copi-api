@@ -3,6 +3,7 @@ using System;
 using COPI_API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace COPI_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250728134359_MigracaoMeta")]
+    partial class MigracaoMeta
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,12 +73,17 @@ namespace COPI_API.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("longtext");
 
+                    b.Property<int?>("TarefaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Titulo")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MetaId");
+
+                    b.HasIndex("TarefaId");
 
                     b.ToTable("AcoesEstrategicas");
                 });
@@ -369,7 +377,7 @@ namespace COPI_API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("AcaoEstrategicaId")
+                    b.Property<int?>("AcaoId")
                         .HasColumnType("int");
 
                     b.Property<string>("AvaliacaoDoc")
@@ -386,6 +394,9 @@ namespace COPI_API.Migrations
 
                     b.Property<string>("Descricao")
                         .HasColumnType("longtext");
+
+                    b.Property<int?>("MetaId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("PrazoFinal")
                         .HasColumnType("datetime(6)");
@@ -407,7 +418,7 @@ namespace COPI_API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AcaoEstrategicaId");
+                    b.HasIndex("MetaId");
 
                     b.ToTable("Tarefas");
                 });
@@ -483,12 +494,19 @@ namespace COPI_API.Migrations
             modelBuilder.Entity("COPI_API.Models.AcaoEstrategica", b =>
                 {
                     b.HasOne("COPI_API.Models.Meta", "Meta")
-                        .WithMany("AcoesEstrategicas")
+                        .WithMany()
                         .HasForeignKey("MetaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("COPI_API.Models.Tarefa", "Tarefa")
+                        .WithMany("AcoesEstrategicas")
+                        .HasForeignKey("TarefaId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.Navigation("Meta");
+
+                    b.Navigation("Tarefa");
                 });
 
             modelBuilder.Entity("COPI_API.Models.ResultadoKPI", b =>
@@ -554,13 +572,12 @@ namespace COPI_API.Migrations
 
             modelBuilder.Entity("COPI_API.Models.Tarefa", b =>
                 {
-                    b.HasOne("COPI_API.Models.AcaoEstrategica", "AcaoEstrategica")
+                    b.HasOne("COPI_API.Models.Meta", "Meta")
                         .WithMany("Tarefas")
-                        .HasForeignKey("AcaoEstrategicaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MetaId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("AcaoEstrategica");
+                    b.Navigation("Meta");
                 });
 
             modelBuilder.Entity("COPI_API.Models.UnidadeKPI", b =>
@@ -597,11 +614,6 @@ namespace COPI_API.Migrations
                     b.Navigation("Nivel");
                 });
 
-            modelBuilder.Entity("COPI_API.Models.AcaoEstrategica", b =>
-                {
-                    b.Navigation("Tarefas");
-                });
-
             modelBuilder.Entity("COPI_API.Models.Avaliacao", b =>
                 {
                     b.Navigation("Resultados");
@@ -619,7 +631,7 @@ namespace COPI_API.Migrations
 
             modelBuilder.Entity("COPI_API.Models.Meta", b =>
                 {
-                    b.Navigation("AcoesEstrategicas");
+                    b.Navigation("Tarefas");
                 });
 
             modelBuilder.Entity("COPI_API.Models.Nivel", b =>
@@ -630,6 +642,11 @@ namespace COPI_API.Migrations
             modelBuilder.Entity("COPI_API.Models.Servidor", b =>
                 {
                     b.Navigation("UnidadesKpiResponsaveis");
+                });
+
+            modelBuilder.Entity("COPI_API.Models.Tarefa", b =>
+                {
+                    b.Navigation("AcoesEstrategicas");
                 });
 
             modelBuilder.Entity("COPI_API.Models.UnidadeKPI", b =>

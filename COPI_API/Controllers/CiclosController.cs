@@ -29,7 +29,6 @@ namespace COPI_API.Controllers
 
             if (ciclo == null)
                 return NotFound();
-
             return ciclo;
         }
 
