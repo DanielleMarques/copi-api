@@ -7,8 +7,6 @@
         public Dictionary<string, bool> NiveisAtingidos { get; set; } = new();
         public string? NomeUnidade { get; set; }
         public string? NomeCiclo { get; set; }
-
-        // Novo campo com nome do KPI e status
         public List<KpiResultadoDTO>? ResultadosDetalhados { get; set; } = new();
     }
 
@@ -19,7 +17,7 @@
         public string? Prova { get; set; }
         public string? AvaliacaoEscrita { get; set; }
         public string Status { get; set; } = string.Empty;
-        public string? Eixo { get; set; } // já deve vir de r.KPI?.Eixo?.Nome
+        public string? Eixo { get; set; } 
 
     }
 }

@@ -1,9 +1,11 @@
+using COPI_API;
 using COPI_API.Models;
 using COPI_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using COPI_API.Models.PIBPEntities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,7 +79,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 

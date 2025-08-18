@@ -1,10 +1,11 @@
-﻿namespace COPI_API.Models.DTO
+using System;
+namespace COPI_API.Models.DTO
 {
     public class ServidorDTO
     {
         public int Id { get; set; }
-        public string Nome { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
+        public string? Nome { get; set; }
+        public string? Email { get; set; }
         public int DivisaoId { get; set; }
         public string? Role { get; set; }
         public string? Celular { get; set; }

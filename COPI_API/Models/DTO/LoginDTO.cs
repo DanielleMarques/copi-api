@@ -11,7 +11,7 @@
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public int DivisaoId { get; set; } // ✅ Adicionado
+        public int DivisaoId { get; set; } 
     }
 
     // DTO para promoção

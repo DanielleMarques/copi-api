@@ -7,7 +7,7 @@
         public string Unidade { get; set; } = string.Empty;
         public int UnidadeId { get; set; }
 
-        public string NomeAbreviado { get; set; } = string.Empty;  // ← Novo
+        public string NomeAbreviado { get; set; } = string.Empty;  
 
         public string Servidor { get; set; } = string.Empty;
         public int ServidorId { get; set; }

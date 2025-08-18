@@ -1,7 +1,11 @@
-﻿using COPI_API.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using COPI_API.Models.PIBPEntities;
+using COPI_API.Models.AdminEntities;
+using COPI_API.Models.MetaEntities;
+using System;
+using System.Collections.Generic;
 
-namespace COPI_API.Models
+namespace COPI_API
 {
     public class AppDbContext : DbContext
     {

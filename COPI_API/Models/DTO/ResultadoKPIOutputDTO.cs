@@ -13,4 +13,3 @@
         public DateTime DataRegistro { get; set; }
     }
 }
-
