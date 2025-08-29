@@ -1,5 +1,6 @@
 using COPI_API.DTOs;
 using COPI_API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace COPI_API.Controllers.ControllersPIBP
@@ -17,6 +18,7 @@ namespace COPI_API.Controllers.ControllersPIBP
 
         // GET: api/Avaliacao/calcular/8/1
         [HttpGet("calcular/{unidadeKpiId}/{cicloId}")]
+        [Authorize]
         public async Task<ActionResult<ResultadoAvaliacaoDTO>> Calcular(int unidadeKpiId, int cicloId)
         {
             var resultado = await _avaliacaoService.CalcularIMPIBP(unidadeKpiId, cicloId, salvar: false);
@@ -28,6 +30,7 @@ namespace COPI_API.Controllers.ControllersPIBP
 
         // POST: api/Avaliacao/calcular/8/1
         [HttpPost("calcular/{unidadeKpiId}/{cicloId}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<ActionResult<ResultadoAvaliacaoDTO>> CalcularESalvar(int unidadeKpiId, int cicloId)
         {
             var resultado = await _avaliacaoService.CalcularIMPIBP(unidadeKpiId, cicloId, salvar: true);
@@ -39,6 +42,7 @@ namespace COPI_API.Controllers.ControllersPIBP
 
         // GET: api/Avaliacao/ciclo/1
         [HttpGet("ciclo/{cicloId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ResultadoAvaliacaoDTO>>> ObterResultadosPorCiclo(int cicloId)
         {
             // Busca todas as unidadesKPI que têm resultados no ciclo
@@ -67,6 +71,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         }
         // GET: api/Avaliacao/ciclo/{cicloId}/eixos
         [HttpGet("ciclo/{cicloId}/eixos")]
+        [Authorize]
         public async Task<ActionResult<object>> ObterResultadosPorEixo(int cicloId)
         {
             var dados = await _avaliacaoService.ObterResultadosPorEixo(cicloId);

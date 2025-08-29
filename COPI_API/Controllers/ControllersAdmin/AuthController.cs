@@ -43,6 +43,7 @@ namespace COPI_API.Controllers
         }
 
         [HttpPost("register")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO dto)
         {
             // Verifica se o e-mail já existe
@@ -72,7 +73,7 @@ namespace COPI_API.Controllers
 
 
         [HttpPost("promover")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> PromoverUsuario([FromBody] PromoverDTO dto)
         {
             var servidor = await _context.Servidores.FirstOrDefaultAsync(s => s.Email == dto.Email);
@@ -159,7 +160,7 @@ namespace COPI_API.Controllers
         }
 
         [HttpGet("todos")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> GetTodosServidores()
         {
             var servidores = await _context.Servidores
@@ -187,7 +188,7 @@ namespace COPI_API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> DeleteServidor(int id)
         {
             var servidor = await _context.Servidores.FindAsync(id);
@@ -224,7 +225,7 @@ namespace COPI_API.Controllers
         }
 
         [HttpPost("resetar-senha/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> ResetarSenha(int id)
         {
             var servidor = await _context.Servidores.FindAsync(id);

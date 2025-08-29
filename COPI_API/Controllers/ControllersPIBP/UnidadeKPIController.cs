@@ -1,6 +1,7 @@
 using COPI_API.Models;
 using COPI_API.Models.DTO;
 using COPI_API.Models.PIBPEntities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ namespace COPI_API.Controllers.ControllersPIBP
             _context = context;
         }
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<UnidadeKPIOutputDTO>>> Get()
         {
             var unidades = await _context.UnidadesKPI
@@ -56,6 +58,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<UnidadeKPIOutputDTO>> GetById(int id)
         {
             var unidade = await _context.UnidadesKPI
@@ -98,6 +101,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<ActionResult<UnidadeKPIOutputDTO>> Post(UnidadeKPICreateDTO dto)
         {
             var unidade = await _context.Unidades.FindAsync(dto.UnidadeId);
@@ -132,6 +136,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<IActionResult> PutUnidadeKPI(int id, UnidadeKPICreateDTO dto)
         {
             var unidadeKPI = await _context.UnidadesKPI.FindAsync(id);
@@ -148,6 +153,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<IActionResult> Delete(int id)
         {
             var unidadeKPI = await _context.UnidadesKPI

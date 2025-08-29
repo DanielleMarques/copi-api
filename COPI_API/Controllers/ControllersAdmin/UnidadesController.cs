@@ -1,5 +1,6 @@
 using COPI_API.Models.AdminEntities;
 using COPI_API.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,9 +14,11 @@ namespace COPI_API.Controllers.ControllersAdmin
         public UnidadesController(AppDbContext context) => _context = context;
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Unidade>>> Get() => await _context.Unidades.ToListAsync();
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<ActionResult<Unidade>> GetById(int id)
         {
             var unidade = await _context.Unidades.FindAsync(id);
@@ -23,6 +26,7 @@ namespace COPI_API.Controllers.ControllersAdmin
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<ActionResult<Unidade>> Post(Unidade unidade)
         {
             _context.Unidades.Add(unidade);
@@ -31,6 +35,7 @@ namespace COPI_API.Controllers.ControllersAdmin
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> Put(int id, Unidade unidade)
         {
             if (id != unidade.Id) return BadRequest();
@@ -49,6 +54,7 @@ namespace COPI_API.Controllers.ControllersAdmin
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> Delete(int id)
         {
             var unidade = await _context.Unidades.FindAsync(id);

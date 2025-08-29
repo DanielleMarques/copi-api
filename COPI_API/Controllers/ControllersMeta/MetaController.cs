@@ -1,9 +1,10 @@
 using COPI_API.Models;
-using COPI_API.Models.DTO;
 using COPI_API.Models.MetaEntities;
+using COPI_API.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace COPI_API.Controllers.ControllersMeta
 {
@@ -21,6 +22,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // GET: api/Meta
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<MetaOutputDTO>>> GetMetas()
         {
             var metasIds = await _context.Metas.Select(m => m.Id).ToListAsync();
@@ -87,6 +89,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // GET: api/Meta/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<MetaOutputDTO>> GetMeta(int id)
         {
             await _metaService.AtualizarProgressoMetaAsync(id);
@@ -151,6 +154,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // POST: api/Meta
         [HttpPost]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<ActionResult<MetaOutputDTO>> PostMeta(MetaInputDTO dto)
         {
             var meta = new Meta
@@ -188,6 +192,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // PUT: api/Meta/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<IActionResult> PutMeta(int id, MetaInputDTO dto)
         {
             var meta = await _context.Metas.FindAsync(id);
@@ -210,6 +215,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // DELETE: api/Meta/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<IActionResult> DeleteMeta(int id)
         {
             var meta = await _context.Metas.FindAsync(id);

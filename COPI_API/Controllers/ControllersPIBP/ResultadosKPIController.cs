@@ -1,6 +1,7 @@
 using COPI_API.Models;
 using COPI_API.Models.DTO;
 using COPI_API.Models.PIBPEntities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ResultadoKPIOutputDTO>>> GetResultados()
         {
             var resultados = await _context.ResultadosKPI
@@ -41,6 +43,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ResultadoKPIOutputDTO>> GetResultadoKPI(int id)
         {
             var resultado = await _context.ResultadosKPI
@@ -68,6 +71,7 @@ namespace COPI_API.Controllers.ControllersPIBP
 
         // GET: api/ResultadoKPI/unidade/{unidadeKPIId}/ciclo/{cicloId}
         [HttpGet("unidade/{unidadeKPIId}/ciclo/{cicloId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<object>>> GetResultadosPorUnidadeECiclo(int unidadeKPIId, int cicloId)
         {
             var resultados = await _context.ResultadosKPI
@@ -106,6 +110,7 @@ namespace COPI_API.Controllers.ControllersPIBP
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<ActionResult<ResultadoKPIOutputDTO>> PostResultadoKPI(ResultadoKPIInputDTO dto)
         {
             var kpi = await _context.KPIs.FindAsync(dto.KPIId);
@@ -145,6 +150,7 @@ namespace COPI_API.Controllers.ControllersPIBP
             return CreatedAtAction(nameof(GetResultadoKPI), new { id = resultado.Id }, output);
         }
         [HttpPost("sincronizar-resultados")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<IActionResult> SincronizarResultados()
         {
             var unidadesKPI = await _context.UnidadesKPI.ToListAsync();
@@ -202,6 +208,7 @@ namespace COPI_API.Controllers.ControllersPIBP
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<IActionResult> PutResultadoKPI(int id, ResultadoKPIInputDTO dto)
         {
             var resultado = await _context.ResultadosKPI
@@ -233,6 +240,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<IActionResult> DeleteResultadoKPI(int id)
         {
             var resultado = await _context.ResultadosKPI.FindAsync(id);

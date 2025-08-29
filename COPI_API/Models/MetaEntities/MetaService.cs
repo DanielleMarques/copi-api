@@ -19,31 +19,37 @@ namespace COPI_API.Models
             if (acao == null)
                 return;
 
-            // Calcula progresso da ação estratégica com base nas tarefas batidas
             int total = acao.Tarefas?.Count ?? 0;
             int batidas = acao.Tarefas?.Count(t => t.Batida) ?? 0;
-            acao.Progresso = (total > 0) ? (int)Math.Round((batidas * 100.0) / total) : 0;
 
-            // Se progresso 100%, marca como concluída e batida
-            if (acao.Progresso == 100)
+            // Se não houver tarefas, progresso 100%
+            if (total == 0)
             {
+                acao.Progresso = 100;
                 acao.Status = "Concluída";
                 acao.Batida = true;
                 acao.Concluido = true;
             }
             else
             {
-                // Remove status de concluída e batida se não for mais 100%
-                if (acao.Status == "Concluída")
-                    acao.Status = "Em andamento";
-                acao.Batida = false;
-                acao.Concluido = false;
+                acao.Progresso = (int)Math.Round((batidas * 100.0) / total);
+                if (acao.Progresso == 100)
+                {
+                    acao.Status = "Concluída";
+                    acao.Batida = true;
+                    acao.Concluido = true;
+                }
+                else
+                {
+                    if (acao.Status == "Concluída")
+                        acao.Status = "Em andamento";
+                    acao.Batida = false;
+                    acao.Concluido = false;
+                }
             }
 
             _context.AcoesEstrategicas.Update(acao);
             await _context.SaveChangesAsync();
-
-            // Atualiza a meta acima
             await AtualizarProgressoMetaAsync(acao.MetaId);
         }
 
@@ -58,17 +64,24 @@ namespace COPI_API.Models
                 return;
             int total = meta.AcoesEstrategicas?.Count ?? 0;
             int batidas = meta.AcoesEstrategicas?.Count(a => a.Progresso == 100 || a.Batida) ?? 0;
-            meta.Progresso = (total > 0) ? (int)Math.Round((batidas * 100.0) / total) : 0;
 
-            // Se progresso 100%, marca como concluída
-            if (meta.Progresso == 100)
+            // Se não houver ações estratégicas, progresso 100%
+            if (total == 0)
             {
+                meta.Progresso = 100;
                 meta.Status = "Concluída";
             }
-            // Se não for mais 100%, remove concluído
-            else if (meta.Status == "Concluída")
+            else
             {
-                meta.Status = "Em andamento";
+                meta.Progresso = (int)Math.Round((batidas * 100.0) / total);
+                if (meta.Progresso == 100)
+                {
+                    meta.Status = "Concluída";
+                }
+                else if (meta.Status == "Concluída")
+                {
+                    meta.Status = "Em andamento";
+                }
             }
 
             _context.Metas.Update(meta);

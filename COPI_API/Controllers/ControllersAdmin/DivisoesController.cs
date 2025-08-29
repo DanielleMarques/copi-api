@@ -1,5 +1,6 @@
 using COPI_API.Models.AdminEntities;
 using COPI_API.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,6 +19,7 @@ namespace COPI_API.Controllers
 
         // GET: api/Divisoes
         [HttpGet]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<ActionResult<IEnumerable<Divisao>>> GetDivisoes()
         {
             return await _context.Divisoes.ToListAsync();
@@ -25,6 +27,7 @@ namespace COPI_API.Controllers
 
         // GET: api/Divisoes/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<ActionResult<Divisao>> GetDivisao(int id)
         {
             var divisao = await _context.Divisoes.FindAsync(id);
@@ -37,6 +40,7 @@ namespace COPI_API.Controllers
 
         // POST: api/Divisoes
         [HttpPost]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<ActionResult<Divisao>> PostDivisao(Divisao divisao)
         {
             _context.Divisoes.Add(divisao);
@@ -47,6 +51,7 @@ namespace COPI_API.Controllers
 
         // PUT: api/Divisoes/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> PutDivisao(int id, Divisao divisao)
         {
             if (id != divisao.Id)
@@ -71,6 +76,7 @@ namespace COPI_API.Controllers
 
         // DELETE: api/Divisoes/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor")]
         public async Task<IActionResult> DeleteDivisao(int id)
         {
             var divisao = await _context.Divisoes.FindAsync(id);

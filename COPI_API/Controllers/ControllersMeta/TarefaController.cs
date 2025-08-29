@@ -1,6 +1,7 @@
 using COPI_API.Models;
 using COPI_API.Models.DTO;
 using COPI_API.Models.MetaEntities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // GET: api/Tarefa
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<TarefaOutputDTO>>> GetTarefas()
         {
             var tarefasIds = await _context.Tarefas.Select(t => t.Id).ToListAsync();
@@ -53,6 +55,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // GET: api/Tarefa/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<TarefaOutputDTO>> GetTarefa(int id)
         {
             await _metaService.AtualizarCascataPorTarefaAsync(id);
@@ -84,6 +87,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // POST: api/Tarefa
         [HttpPost]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<ActionResult<TarefaOutputDTO>> PostTarefa(TarefaInputDTO dto)
         {
             var tarefa = new Tarefa
@@ -123,6 +127,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // PUT: api/Tarefa/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<IActionResult> PutTarefa(int id, TarefaInputDTO dto)
         {
             var tarefa = await _context.Tarefas.FindAsync(id);
@@ -147,6 +152,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // DELETE: api/Tarefa/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<IActionResult> DeleteTarefa(int id)
         {
             var tarefa = await _context.Tarefas.FindAsync(id);
@@ -157,6 +163,33 @@ namespace COPI_API.Controllers.ControllersMeta
             await _context.SaveChangesAsync();
             await _metaService.AtualizarProgressoAcoesAsync(acaoEstrategicaId);
             return NoContent();
+        }
+
+        // GET: api/Tarefa/por-acao/{acaoId}
+        [HttpGet("por-acao/{acaoId}")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<TarefaOutputDTO>>> GetTarefasPorAcao(int acaoId)
+        {
+            var tarefas = await _context.Tarefas
+                .Where(t => t.AcaoEstrategicaId == acaoId)
+                .ToListAsync();
+            var result = tarefas.Select(t => new TarefaOutputDTO
+            {
+                Id = t.Id,
+                Titulo = t.Titulo,
+                Descricao = t.Descricao,
+                Status = t.Status,
+                StatusExecucao = t.StatusExecucao,
+                Responsavel = t.Responsavel,
+                Comentario = t.Comentario,
+                AvaliacaoDoc = t.AvaliacaoDoc,
+                Batida = t.Batida,
+                PrazoFinal = t.PrazoFinal,
+                DataCumprimento = t.DataCumprimento,
+                Progresso = t.Progresso,
+                AcaoEstrategicaId = t.AcaoEstrategicaId
+            }).ToList();
+            return Ok(result);
         }
 
         private bool TarefaExists(int id) => _context.Tarefas.Any(t => t.Id == id);

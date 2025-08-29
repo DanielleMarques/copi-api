@@ -1,6 +1,7 @@
 using COPI_API.Models.PIBPEntities;
 using COPI_API.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace COPI_API.Controllers.ControllersPIBP
         private readonly AppDbContext _context;
         public KPIsController(AppDbContext context) => _context = context;
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<KPIListDto>>> Get()
         {
             return await _context.KPIs
@@ -30,6 +32,7 @@ namespace COPI_API.Controllers.ControllersPIBP
                 }));
         }
         [HttpPost]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<ActionResult<KPI>> Post(KPIDto kpiDto)
         {
             var nivel = await _context.Niveis.FindAsync(kpiDto.NivelId);
@@ -49,6 +52,7 @@ namespace COPI_API.Controllers.ControllersPIBP
             return CreatedAtAction(nameof(Get), new { id = kpi.Id }, kpi);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<IActionResult> Put(int id, KPIDto kpiDto)
         {
             var kpi = await _context.KPIs
@@ -80,6 +84,7 @@ namespace COPI_API.Controllers.ControllersPIBP
             return NoContent();
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
         public async Task<IActionResult> Delete(int id)
         {
             var kpi = await _context.KPIs

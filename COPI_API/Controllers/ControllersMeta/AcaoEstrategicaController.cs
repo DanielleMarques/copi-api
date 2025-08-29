@@ -1,10 +1,10 @@
 using COPI_API.Models.MetaEntities;
-using COPI_API.Models;
-using System.Collections.Generic;
-using System.Linq;
+using COPI_API.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using COPI_API.Models.DTO;
+using System.Linq;
+using COPI_API.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace COPI_API.Controllers.ControllersMeta
 {
@@ -22,6 +22,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // GET: api/AcaoEstrategica
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<AcaoEstrategicaOutputDTO>>> GetAcoesEstrategicas()
         {
             var acoesIds = await _context.AcoesEstrategicas.Select(a => a.Id).ToListAsync();
@@ -73,6 +74,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // GET: api/AcaoEstrategica/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<AcaoEstrategicaOutputDTO>> GetAcaoEstrategica(int id)
         {
             await _metaService.AtualizarCascataPorAcaoAsync(id);
@@ -122,6 +124,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // POST: api/AcaoEstrategica
         [HttpPost]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<ActionResult<AcaoEstrategicaOutputDTO>> PostAcaoEstrategica(AcaoEstrategicaInputDTO dto)
         {
             var acao = new AcaoEstrategica
@@ -171,6 +174,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // PUT: api/AcaoEstrategica/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<IActionResult> PutAcaoEstrategica(int id, AcaoEstrategicaInputDTO dto)
         {
             var acao = await _context.AcoesEstrategicas.FindAsync(id);
@@ -199,6 +203,7 @@ namespace COPI_API.Controllers.ControllersMeta
 
         // DELETE: api/AcaoEstrategica/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
         public async Task<IActionResult> DeleteAcaoEstrategica(int id)
         {
             var acao = await _context.AcoesEstrategicas.FindAsync(id);
@@ -209,6 +214,53 @@ namespace COPI_API.Controllers.ControllersMeta
             await _context.SaveChangesAsync();
             await _metaService.AtualizarProgressoMetaAsync(metaId);
             return NoContent();
+        }
+
+        // GET: api/AcaoEstrategica/por-meta/{metaId}
+        [HttpGet("por-meta/{metaId}")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<AcaoEstrategicaOutputDTO>>> GetAcoesPorMeta(int metaId)
+        {
+            var acoes = await _context.AcoesEstrategicas
+                .Where(a => a.MetaId == metaId)
+                .Include(a => a.Tarefas)
+                .ToListAsync();
+            var result = acoes.Select(a => new AcaoEstrategicaOutputDTO
+            {
+                Id = a.Id,
+                Titulo = a.Titulo,
+                Descricao = a.Descricao,
+                MetaId = a.MetaId,
+                AcaoExecutada = a.AcaoExecutada,
+                ResponsavelExecucao = a.ResponsavelExecucao,
+                ResponsavelAprovacao = a.ResponsavelAprovacao,
+                Progresso = a.Progresso,
+                Comentarios = a.Comentarios,
+                DocumentosAnalise = a.DocumentosAnalise,
+                Evidencia = a.Evidencia,
+                DocumentoValidado = a.DocumentoValidado,
+                PrazoFinal = a.PrazoFinal,
+                DataCumprimento = a.DataCumprimento,
+                Concluido = a.Concluido,
+                Status = a.Status,
+                Batida = a.Batida,
+                Tarefas = a.Tarefas?.Select(t => new TarefaOutputDTO
+                {
+                    Id = t.Id,
+                    Titulo = t.Titulo,
+                    Descricao = t.Descricao,
+                    Status = t.Status,
+                    StatusExecucao = t.StatusExecucao,
+                    Responsavel = t.Responsavel,
+                    Comentario = t.Comentario,
+                    AvaliacaoDoc = t.AvaliacaoDoc,
+                    Batida = t.Batida,
+                    PrazoFinal = t.PrazoFinal,
+                    DataCumprimento = t.DataCumprimento,
+                    Progresso = t.Progresso
+                }).ToList()
+            }).ToList();
+            return Ok(result);
         }
 
         private bool AcaoEstrategicaExists(int id) => _context.AcoesEstrategicas.Any(a => a.Id == id);
