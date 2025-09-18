@@ -2,6 +2,7 @@
 using COPI_API.Models.PIBPEntities;
 using COPI_API.Models.AdminEntities;
 using COPI_API.Models.MetaEntities;
+using COPI_API.Models.PIGEEntities;
 using System;
 using System.Collections.Generic;
 
@@ -11,6 +12,7 @@ namespace COPI_API
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
+        // PIBP
         public DbSet<Ciclo> Ciclos { get; set; }
         public DbSet<Unidade> Unidades { get; set; }
         public DbSet<UnidadeKPI> UnidadesKPI { get; set; }
@@ -25,6 +27,16 @@ namespace COPI_API
         public DbSet<Meta> Metas { get; set; }
         public DbSet<Tarefa> Tarefas { get; set; }
         public DbSet<AcaoEstrategica> AcoesEstrategicas { get; set; }
+
+        // PIGE
+        public DbSet<CicloPIGE> CiclosPIGE { get; set; }
+        public DbSet<UnidadeKPIPIGE> UnidadesKPIPIGE { get; set; }
+        public DbSet<KPIPIGE> KPIsPIGE { get; set; }
+        public DbSet<EixoPIGE> EixosPIGE { get; set; }
+        public DbSet<NivelPIGE> NiveisPIGE { get; set; }
+        public DbSet<AvaliacaoPIGE> AvaliacoesPIGE { get; set; }
+        public DbSet<ResultadoKPIPIGE> ResultadosKPIPIGE { get; set; }
+        public DbSet<StatusPIGE> StatusPIGE { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -3,6 +3,7 @@ using System;
 using COPI_API;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace COPI_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250901130224_MigracaoUnidadeTipo")]
+    partial class MigracaoUnidadeTipo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -483,216 +486,6 @@ namespace COPI_API.Migrations
                     b.ToTable("UnidadesKPI");
                 });
 
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.AvaliacaoPIGE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("NivelGerenciadoAtingido")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("NivelIntegradoAtingido")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("NivelPadronizadoAtingido")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<decimal>("NotaIMPIGE")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal>("NotaNG")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal>("NotaNI")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<decimal>("NotaNP")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AvaliacoesPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.CicloPIGE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DataFim")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("DataInicio")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool?>("Encerrado")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CiclosPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.EixoPIGE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal>("Peso")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EixosPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.KPIPIGE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("EixoId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NivelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("longtext");
-
-                    b.Property<double?>("Pontuacao")
-                        .HasColumnType("double");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EixoId");
-
-                    b.HasIndex("NivelId");
-
-                    b.ToTable("KPIsPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.NivelPIGE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nome")
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NiveisPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.ResultadoKPIPIGE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("AvaliacaoEscrita")
-                        .HasColumnType("longtext");
-
-                    b.Property<int?>("AvaliacaoPIGEId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CicloPIGEId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DataRegistro")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("KPIPIGEId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Prova")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Status")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("UnidadeKPIPIGEId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AvaliacaoPIGEId");
-
-                    b.HasIndex("CicloPIGEId");
-
-                    b.HasIndex("KPIPIGEId");
-
-                    b.HasIndex("UnidadeKPIPIGEId");
-
-                    b.ToTable("ResultadosKPIPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.StatusPIGE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("CicloPIGEId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UnidadeKPIPIGEId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CicloPIGEId");
-
-                    b.HasIndex("UnidadeKPIPIGEId");
-
-                    b.ToTable("StatusPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.UnidadeKPIPIGE", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("SEI")
-                        .HasColumnType("longtext");
-
-                    b.Property<int>("ServidorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UnidadeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ServidorId");
-
-                    b.HasIndex("UnidadeId");
-
-                    b.ToTable("UnidadesKPIPIGE");
-                });
-
             modelBuilder.Entity("COPI_API.Models.AdminEntities.Servidor", b =>
                 {
                     b.HasOne("COPI_API.Models.AdminEntities.Divisao", "Divisao")
@@ -810,90 +603,6 @@ namespace COPI_API.Migrations
                     b.Navigation("Unidade");
                 });
 
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.KPIPIGE", b =>
-                {
-                    b.HasOne("COPI_API.Models.PIGEEntities.EixoPIGE", "Eixo")
-                        .WithMany()
-                        .HasForeignKey("EixoId");
-
-                    b.HasOne("COPI_API.Models.PIGEEntities.NivelPIGE", "Nivel")
-                        .WithMany()
-                        .HasForeignKey("NivelId");
-
-                    b.Navigation("Eixo");
-
-                    b.Navigation("Nivel");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.ResultadoKPIPIGE", b =>
-                {
-                    b.HasOne("COPI_API.Models.PIGEEntities.AvaliacaoPIGE", null)
-                        .WithMany("Resultados")
-                        .HasForeignKey("AvaliacaoPIGEId");
-
-                    b.HasOne("COPI_API.Models.PIGEEntities.CicloPIGE", "CicloPIGE")
-                        .WithMany()
-                        .HasForeignKey("CicloPIGEId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("COPI_API.Models.PIGEEntities.KPIPIGE", "KPIPIGE")
-                        .WithMany()
-                        .HasForeignKey("KPIPIGEId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("COPI_API.Models.PIGEEntities.UnidadeKPIPIGE", "UnidadeKPIPIGE")
-                        .WithMany("Resultados")
-                        .HasForeignKey("UnidadeKPIPIGEId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CicloPIGE");
-
-                    b.Navigation("KPIPIGE");
-
-                    b.Navigation("UnidadeKPIPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.StatusPIGE", b =>
-                {
-                    b.HasOne("COPI_API.Models.PIGEEntities.CicloPIGE", "CicloPIGE")
-                        .WithMany()
-                        .HasForeignKey("CicloPIGEId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("COPI_API.Models.PIGEEntities.UnidadeKPIPIGE", "UnidadeKPIPIGE")
-                        .WithMany()
-                        .HasForeignKey("UnidadeKPIPIGEId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CicloPIGE");
-
-                    b.Navigation("UnidadeKPIPIGE");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.UnidadeKPIPIGE", b =>
-                {
-                    b.HasOne("COPI_API.Models.AdminEntities.Servidor", "Servidor")
-                        .WithMany()
-                        .HasForeignKey("ServidorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("COPI_API.Models.AdminEntities.Unidade", "Unidade")
-                        .WithMany()
-                        .HasForeignKey("UnidadeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Servidor");
-
-                    b.Navigation("Unidade");
-                });
-
             modelBuilder.Entity("COPI_API.Models.AdminEntities.Divisao", b =>
                 {
                     b.Navigation("Servidores");
@@ -920,16 +629,6 @@ namespace COPI_API.Migrations
                 });
 
             modelBuilder.Entity("COPI_API.Models.PIBPEntities.UnidadeKPI", b =>
-                {
-                    b.Navigation("Resultados");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.AvaliacaoPIGE", b =>
-                {
-                    b.Navigation("Resultados");
-                });
-
-            modelBuilder.Entity("COPI_API.Models.PIGEEntities.UnidadeKPIPIGE", b =>
                 {
                     b.Navigation("Resultados");
                 });

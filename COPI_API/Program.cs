@@ -1,6 +1,7 @@
 using COPI_API;
 using COPI_API.Models;
 using COPI_API.Models.PIBPEntities;
+using COPI_API.Models.PIGEEntities;
 using COPI_API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,7 @@ builder.Services.AddSwaggerGen(options =>
 
 // 5. Injeção de Serviços
 builder.Services.AddScoped<AvaliacaoService>();
+builder.Services.AddScoped<AvaliacaoServicePIGE>();
 
 // 6. Autenticação JWT
 var chaveJwt = builder.Configuration["Jwt:Key"] ?? "sua_chave_super_secreta";
