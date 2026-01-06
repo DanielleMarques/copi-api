@@ -26,7 +26,6 @@ namespace COPI_API.Controllers.PIGE
         {
             var unidades = await _context.Set<UnidadeKPIPIGE>()
                 .Include(u => u.Unidade)
-                .Include(u => u.Servidor)
                 .Include(u => u.Resultados!)
                     .ThenInclude(r => r.KPIPIGE)
                         .ThenInclude(k => k.Eixo)
@@ -44,8 +43,6 @@ namespace COPI_API.Controllers.PIGE
                 UnidadeId = u.UnidadeId,
                 NomeAbreviado = u.Unidade?.NomeAbreviado ?? "",
                 Tipo = u.Unidade?.Tipo ?? "",
-                Servidor = u.Servidor?.Nome ?? "",
-                ServidorId = u.ServidorId,
                 SEI = u.SEI ?? "",
                 Resultados = u.Resultados?.Select(r => new ResultadoSimplificadoPIGEDTO
                 {
@@ -69,7 +66,6 @@ namespace COPI_API.Controllers.PIGE
         {
             var unidade = await _context.Set<UnidadeKPIPIGE>()
                 .Include(u => u.Unidade)
-                .Include(u => u.Servidor)
                 .Include(u => u.Resultados!)
                     .ThenInclude(r => r.KPIPIGE)
                         .ThenInclude(k => k.Eixo)
@@ -90,8 +86,6 @@ namespace COPI_API.Controllers.PIGE
                 UnidadeId = unidade.UnidadeId,
                 NomeAbreviado = unidade.Unidade?.NomeAbreviado ?? "",
                 Tipo = unidade.Unidade?.Tipo ?? "",
-                Servidor = unidade.Servidor?.Nome ?? "",
-                ServidorId = unidade.ServidorId,
                 SEI = unidade.SEI ?? "",
                 Resultados = unidade.Resultados?.Select(r => new ResultadoSimplificadoPIGEDTO
                 {
@@ -114,15 +108,13 @@ namespace COPI_API.Controllers.PIGE
         public async Task<ActionResult<UnidadeKPIPIGEOutputDTO>> Post(UnidadeKPIPIGECreateDTO dto)
         {
             var unidade = await _context.Unidades.FindAsync(dto.UnidadeId);
-            var servidor = await _context.Servidores.FindAsync(dto.ServidorId);
 
-            if (unidade == null || servidor == null)
-                return BadRequest("Unidade ou Servidor inválido.");
+            if (unidade == null)
+                return BadRequest("Unidade inválida.");
 
             var unidadeKPI = new UnidadeKPIPIGE
             {
                 UnidadeId = dto.UnidadeId,
-                ServidorId = dto.ServidorId,
                 SEI = dto.SEI
             };
 
@@ -136,8 +128,6 @@ namespace COPI_API.Controllers.PIGE
                 UnidadeId = unidade.Id,
                 NomeAbreviado = unidade.NomeAbreviado ?? "",
                 Tipo = unidade.Tipo ?? "",
-                Servidor = servidor.Nome,
-                ServidorId = servidor.Id,
                 SEI = unidadeKPI.SEI ?? "",
                 Resultados = new List<ResultadoSimplificadoPIGEDTO>()
             };
@@ -154,7 +144,6 @@ namespace COPI_API.Controllers.PIGE
                 return NotFound();
 
             unidadeKPI.UnidadeId = dto.UnidadeId;
-            unidadeKPI.ServidorId = dto.ServidorId;
             unidadeKPI.SEI = dto.SEI;
 
             await _context.SaveChangesAsync();

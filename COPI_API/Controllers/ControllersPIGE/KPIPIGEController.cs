@@ -15,6 +15,7 @@ namespace COPI_API.Controllers.PIGE
     public class KPIPIGEController : ControllerBase
     {
         private readonly AppDbContext _context;
+
         public KPIPIGEController(AppDbContext context) => _context = context;
 
         [HttpGet]
@@ -49,7 +50,7 @@ namespace COPI_API.Controllers.PIGE
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP,UsuarioPIGE")]
         public async Task<ActionResult<KPIPIGE>> Post(KPIPIGEDTO kpiDto)
         {
             var nivel = await _context.NiveisPIGE.FindAsync(kpiDto.NivelId);
@@ -70,7 +71,7 @@ namespace COPI_API.Controllers.PIGE
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP,UsuarioPIGE")]
         public async Task<IActionResult> Put(int id, KPIPIGEDTO kpiDto)
         {
             var kpi = await _context.KPIsPIGE
@@ -112,7 +113,7 @@ namespace COPI_API.Controllers.PIGE
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP,UsuarioPIGE")]
         public async Task<IActionResult> Delete(int id)
         {
             var kpi = await _context.KPIsPIGE

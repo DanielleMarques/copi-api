@@ -54,6 +54,11 @@ namespace COPI_API
                 .WithOne(t => t.AcaoEstrategica)
                 .HasForeignKey(t => t.AcaoEstrategicaId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Relação muitos-para-muitos UnidadeKPIPIGE <-> Servidor
+            modelBuilder.Entity<UnidadeKPIPIGE>()
+                .HasMany(u => u.Servidores)
+                .WithMany();
         }
     }
 }

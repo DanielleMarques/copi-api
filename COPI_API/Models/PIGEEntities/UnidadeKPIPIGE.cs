@@ -8,9 +8,8 @@ namespace COPI_API.Models.PIGEEntities
         public int Id { get; set; }
         public int UnidadeId { get; set; }
         public Unidade? Unidade { get; set; }
-        public int ServidorId { get; set; }
-        public Servidor? Servidor { get; set; }
         public string? SEI { get; set; }
         public List<ResultadoKPIPIGE>? Resultados { get; set; }
+        public List<Servidor> Servidores { get; set; } = new();
     }
 }

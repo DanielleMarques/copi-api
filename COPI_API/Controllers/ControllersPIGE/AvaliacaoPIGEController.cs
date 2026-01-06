@@ -28,7 +28,7 @@ namespace COPI_API.Controllers.PIGE
         }
 
         [HttpPost("calcular/{unidadeKpiId}/{cicloId}")]
-        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIBP, UsuarioPIGE")]
         public async Task<IActionResult> CalcularESalvar(int unidadeKpiId, int cicloId)
         {
             var resultado = await _avaliacaoService.CalcularIMPIGE(unidadeKpiId, cicloId, salvar: true);

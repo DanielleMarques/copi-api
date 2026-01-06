@@ -34,7 +34,7 @@ namespace COPI_API.Controllers.ControllersPIBP
                 KPI = r.KPI?.Nome ?? "N/A",
                 Unidade = r.UnidadeKPI?.Unidade?.Nome ?? "N/A",
                 CicloId = r.CicloId,
-                Ciclo = r.Ciclo?.Nome ?? "N/A", // Assumindo que Ciclo tem propriedade Nome
+                Ciclo = r.Ciclo?.Nome ?? "N/A", 
                 Status = r.Status ?? "N/A",
                 Prova = r.Prova ?? "",
                 AvaliacaoEscrita = r.AvaliacaoEscrita ?? "",

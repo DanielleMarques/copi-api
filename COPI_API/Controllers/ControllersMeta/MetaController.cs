@@ -17,7 +17,7 @@ namespace COPI_API.Controllers.ControllersMeta
         public MetaController(AppDbContext context)
         {
             _context = context;
-            _metaService = new MetaService(_context);
+            _metaService = new MetaService(_context); 
         }
 
         // GET: api/Meta

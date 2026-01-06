@@ -67,7 +67,6 @@ namespace COPI_API.Controllers.PIGE
                 else
                     throw;
             }
-
             return NoContent();
         }
 

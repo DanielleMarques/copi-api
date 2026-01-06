@@ -125,7 +125,7 @@ namespace COPI_API.Controllers.ControllersPIGE
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Gestor")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIGE")]
         public async Task<ActionResult<ResultadoKPIPIGEOutputDTO>> PostResultadoKPIPIGE(ResultadoKPIPIGEInputDTO dto)
         {
             // Verifica duplicidade
@@ -185,7 +185,7 @@ namespace COPI_API.Controllers.ControllersPIGE
         }
 
         [HttpPost("sincronizar-resultados")]
-        [Authorize(Roles = "Admin,Gestor")]
+        [Authorize(Roles = "Admin,Gestor, GestorPIBP")]
         public async Task<IActionResult> SincronizarResultados()
         {
             var unidadesKPI = await _context.Set<UnidadeKPIPIGE>().ToListAsync();
@@ -242,7 +242,7 @@ namespace COPI_API.Controllers.ControllersPIGE
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin,Gestor")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIGE")]
         public async Task<IActionResult> PutResultadoKPIPIGE(int id, ResultadoKPIPIGEInputDTO dto)
         {
             var resultado = await _context.Set<ResultadoKPIPIGE>().FindAsync(id);
@@ -269,7 +269,7 @@ namespace COPI_API.Controllers.ControllersPIGE
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Gestor")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,UsuarioPIGE")]
         public async Task<IActionResult> DeleteResultadoKPIPIGE(int id)
         {
             var resultado = await _context.Set<ResultadoKPIPIGE>().FindAsync(id);
