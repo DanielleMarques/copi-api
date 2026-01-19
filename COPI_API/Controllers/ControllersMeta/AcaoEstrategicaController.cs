@@ -25,11 +25,16 @@ namespace COPI_API.Controllers.ControllersMeta
         [Authorize]
         public async Task<ActionResult<IEnumerable<AcaoEstrategicaOutputDTO>>> GetAcoesEstrategicas()
         {
-            var acoesIds = await _context.AcoesEstrategicas.Select(a => a.Id).ToListAsync();
-            foreach (var acaoId in acoesIds)
+            var acoesComTarefas = await _context.AcoesEstrategicas
+                .Where(a => a.Tarefas != null && a.Tarefas.Any())
+                .Select(a => a.Id)
+                .ToListAsync();
+
+            foreach (var acaoId in acoesComTarefas)
             {
                 await _metaService.AtualizarCascataPorAcaoAsync(acaoId);
             }
+
             var acoes = await _context.AcoesEstrategicas
                 .Include(a => a.Meta)
                 .Include(a => a.Tarefas)
@@ -77,7 +82,12 @@ namespace COPI_API.Controllers.ControllersMeta
         [Authorize]
         public async Task<ActionResult<AcaoEstrategicaOutputDTO>> GetAcaoEstrategica(int id)
         {
-            await _metaService.AtualizarCascataPorAcaoAsync(id);
+            var temTarefas = await _context.Tarefas.AnyAsync(t => t.AcaoEstrategicaId == id);
+            if (temTarefas)
+            {
+                await _metaService.AtualizarCascataPorAcaoAsync(id);
+            }
+
             var a = await _context.AcoesEstrategicas
                 .Include(a => a.Meta)
                 .Include(a => a.Tarefas)
@@ -148,7 +158,9 @@ namespace COPI_API.Controllers.ControllersMeta
             };
             _context.AcoesEstrategicas.Add(acao);
             await _context.SaveChangesAsync();
+
             await _metaService.AtualizarProgressoMetaAsync(acao.MetaId);
+
             return CreatedAtAction(nameof(GetAcaoEstrategica), new { id = acao.Id }, new AcaoEstrategicaOutputDTO
             {
                 Id = acao.Id,
@@ -197,7 +209,17 @@ namespace COPI_API.Controllers.ControllersMeta
             acao.Status = dto.Status;
             acao.Batida = dto.Batida;
             await _context.SaveChangesAsync();
-            await _metaService.AtualizarProgressoMetaAsync(acao.MetaId);
+
+            var temTarefas = await _context.Tarefas.AnyAsync(t => t.AcaoEstrategicaId == id);
+            if (temTarefas)
+            {
+                await _metaService.AtualizarCascataPorAcaoAsync(id);
+            }
+            else
+            {
+                await _metaService.AtualizarProgressoMetaAsync(acao.MetaId);
+            }
+
             return NoContent();
         }
 
@@ -212,7 +234,13 @@ namespace COPI_API.Controllers.ControllersMeta
             int metaId = acao.MetaId;
             _context.AcoesEstrategicas.Remove(acao);
             await _context.SaveChangesAsync();
-            await _metaService.AtualizarProgressoMetaAsync(metaId);
+
+            var temOutrasAcoes = await _context.AcoesEstrategicas.AnyAsync(a => a.MetaId == metaId);
+            if (temOutrasAcoes)
+            {
+                await _metaService.AtualizarProgressoMetaAsync(metaId);
+            }
+
             return NoContent();
         }
 

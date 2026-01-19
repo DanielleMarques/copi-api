@@ -17,7 +17,7 @@ namespace COPI_API.Controllers.ControllersMeta
         public MetaController(AppDbContext context)
         {
             _context = context;
-            _metaService = new MetaService(_context); 
+            _metaService = new MetaService(_context);
         }
 
         // GET: api/Meta
@@ -25,11 +25,16 @@ namespace COPI_API.Controllers.ControllersMeta
         [Authorize]
         public async Task<ActionResult<IEnumerable<MetaOutputDTO>>> GetMetas()
         {
-            var metasIds = await _context.Metas.Select(m => m.Id).ToListAsync();
-            foreach (var metaId in metasIds)
+            var metasComAcoes = await _context.Metas
+                .Where(m => m.AcoesEstrategicas != null && m.AcoesEstrategicas.Any())
+                .Select(m => m.Id)
+                .ToListAsync();
+
+            foreach (var metaId in metasComAcoes)
             {
                 await _metaService.AtualizarProgressoMetaAsync(metaId);
             }
+
             var metas = await _context.Metas
                 .Include(m => m.AcoesEstrategicas)
                     .ThenInclude(a => a.Tarefas)
@@ -92,7 +97,12 @@ namespace COPI_API.Controllers.ControllersMeta
         [Authorize]
         public async Task<ActionResult<MetaOutputDTO>> GetMeta(int id)
         {
-            await _metaService.AtualizarProgressoMetaAsync(id);
+            var temAcoes = await _context.AcoesEstrategicas.AnyAsync(a => a.MetaId == id);
+            if (temAcoes)
+            {
+                await _metaService.AtualizarProgressoMetaAsync(id);
+            }
+
             var m = await _context.Metas
                 .Include(meta => meta.AcoesEstrategicas)
                     .ThenInclude(a => a.Tarefas)
@@ -209,22 +219,16 @@ namespace COPI_API.Controllers.ControllersMeta
             meta.DataInic = dto.DataInic;
             meta.DataFim = dto.DataFim;
             await _context.SaveChangesAsync();
-            await _metaService.AtualizarProgressoMetaAsync(meta.Id);
+
+            var temAcoes = await _context.AcoesEstrategicas.AnyAsync(a => a.MetaId == id);
+            if (temAcoes)
+            {
+                await _metaService.AtualizarProgressoMetaAsync(meta.Id);
+            }
+
             return NoContent();
         }
 
-        // DELETE: api/Meta/5
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
-        public async Task<IActionResult> DeleteMeta(int id)
-        {
-            var meta = await _context.Metas.FindAsync(id);
-            if (meta == null)
-                return NotFound();
-            _context.Metas.Remove(meta);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
 
         // GET: api/Meta/media-progresso
         [HttpGet("media-progresso")]

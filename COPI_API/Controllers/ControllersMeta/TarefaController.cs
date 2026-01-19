@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+
 namespace COPI_API.Controllers.ControllersMeta
 {
     [ApiController]
@@ -24,11 +25,17 @@ namespace COPI_API.Controllers.ControllersMeta
         [Authorize]
         public async Task<ActionResult<IEnumerable<TarefaOutputDTO>>> GetTarefas()
         {
-            var tarefasIds = await _context.Tarefas.Select(t => t.Id).ToListAsync();
-            foreach (var tarefaId in tarefasIds)
+            var tarefasParaAtualizar = await _context.Tarefas
+                .Where(t => _context.Tarefas.Any(t2 => t2.AcaoEstrategicaId == t.AcaoEstrategicaId))
+                .Select(t => t.Id)
+                .Distinct()
+                .ToListAsync();
+
+            foreach (var tarefaId in tarefasParaAtualizar)
             {
                 await _metaService.AtualizarCascataPorTarefaAsync(tarefaId);
             }
+
             var tarefas = await _context.Tarefas
                 .Include(t => t.AcaoEstrategica)
                     .ThenInclude(a => a.Meta)
@@ -59,6 +66,7 @@ namespace COPI_API.Controllers.ControllersMeta
         public async Task<ActionResult<TarefaOutputDTO>> GetTarefa(int id)
         {
             await _metaService.AtualizarCascataPorTarefaAsync(id);
+
             var t = await _context.Tarefas
                 .Include(tarefa => tarefa.AcaoEstrategica)
                     .ThenInclude(a => a.Meta)
@@ -106,7 +114,9 @@ namespace COPI_API.Controllers.ControllersMeta
             };
             _context.Tarefas.Add(tarefa);
             await _context.SaveChangesAsync();
-            await _metaService.AtualizarProgressoAcoesAsync(tarefa.AcaoEstrategicaId);
+
+            await _metaService.AtualizarCascataPorTarefaAsync(tarefa.Id);
+
             return CreatedAtAction(nameof(GetTarefa), new { id = tarefa.Id }, new TarefaOutputDTO
             {
                 Id = tarefa.Id,
@@ -145,8 +155,9 @@ namespace COPI_API.Controllers.ControllersMeta
             tarefa.PrazoFinal = dto.PrazoFinal;
             tarefa.DataCumprimento = dto.DataCumprimento;
             await _context.SaveChangesAsync();
-            // Atualiza toda a cascata após salvar a tarefa
+
             await _metaService.AtualizarCascataPorTarefaAsync(id);
+
             return NoContent();
         }
 
@@ -161,37 +172,24 @@ namespace COPI_API.Controllers.ControllersMeta
             int acaoEstrategicaId = tarefa.AcaoEstrategicaId;
             _context.Tarefas.Remove(tarefa);
             await _context.SaveChangesAsync();
-            await _metaService.AtualizarProgressoAcoesAsync(acaoEstrategicaId);
+
+            var temOutrasTarefas = await _context.Tarefas.AnyAsync(t => t.AcaoEstrategicaId == acaoEstrategicaId);
+            if (temOutrasTarefas)
+            {
+                await _metaService.AtualizarProgressoAcoesAsync(acaoEstrategicaId);
+            }
+            else
+            {
+                // Se não tem mais tarefas, só atualiza o progresso da meta
+                var acao = await _context.AcoesEstrategicas.FindAsync(acaoEstrategicaId);
+                if (acao != null)
+                {
+                    await _metaService.AtualizarProgressoMetaAsync(acao.MetaId);
+                }
+            }
+
             return NoContent();
         }
 
-        // GET: api/Tarefa/por-acao/{acaoId}
-        [HttpGet("por-acao/{acaoId}")]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<TarefaOutputDTO>>> GetTarefasPorAcao(int acaoId)
-        {
-            var tarefas = await _context.Tarefas
-                .Where(t => t.AcaoEstrategicaId == acaoId)
-                .ToListAsync();
-            var result = tarefas.Select(t => new TarefaOutputDTO
-            {
-                Id = t.Id,
-                Titulo = t.Titulo,
-                Descricao = t.Descricao,
-                Status = t.Status,
-                StatusExecucao = t.StatusExecucao,
-                Responsavel = t.Responsavel,
-                Comentario = t.Comentario,
-                AvaliacaoDoc = t.AvaliacaoDoc,
-                Batida = t.Batida,
-                PrazoFinal = t.PrazoFinal,
-                DataCumprimento = t.DataCumprimento,
-                Progresso = t.Progresso,
-                AcaoEstrategicaId = t.AcaoEstrategicaId
-            }).ToList();
-            return Ok(result);
-        }
-
-        private bool TarefaExists(int id) => _context.Tarefas.Any(t => t.Id == id);
     }
 }

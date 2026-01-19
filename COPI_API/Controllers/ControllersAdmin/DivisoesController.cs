@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.ComponentModel.DataAnnotations;
 namespace COPI_API.Controllers
 {
     [Route("api/[controller]")]
@@ -19,7 +20,7 @@ namespace COPI_API.Controllers
 
         // GET: api/Divisoes
         [HttpGet]
-        [Authorize(Roles = "Admin,Gestor")]
+        //[Authorize(Roles = "Admin,Gestor")]
         public async Task<ActionResult<IEnumerable<Divisao>>> GetDivisoes()
         {
             return await _context.Divisoes.ToListAsync();
@@ -38,15 +39,30 @@ namespace COPI_API.Controllers
             return divisao;
         }
 
+        public class DivisaoCreateDto
+        {
+            [Required]
+            public string Nome { get; set; } = string.Empty;
+        }
+
         // POST: api/Divisoes
         [HttpPost]
         [Authorize(Roles = "Admin,Gestor")]
-        public async Task<ActionResult<Divisao>> PostDivisao(Divisao divisao)
+        public async Task<ActionResult<Divisao>> PostDivisao(DivisaoCreateDto dto)
         {
+            var divisao = new Divisao
+            {
+                Nome = dto.Nome
+            };
+
             _context.Divisoes.Add(divisao);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetDivisao), new { id = divisao.Id }, divisao);
+            return CreatedAtAction(
+                nameof(GetDivisao),
+                new { id = divisao.Id },
+                divisao
+            );
         }
 
         // PUT: api/Divisoes/5
