@@ -1,10 +1,11 @@
 using COPI_API.Models;
-using COPI_API.Models.MetaEntities;
 using COPI_API.Models.DTO;
+using COPI_API.Models.MetaEntities;
+using COPI_API.Models.PIBPEntities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 
 namespace COPI_API.Controllers.ControllersMeta
 {
@@ -47,6 +48,16 @@ namespace COPI_API.Controllers.ControllersMeta
                 Status = m.Status,
                 Tipo = m.Tipo,
                 Setor = m.Setor,
+                AvaliacaoDi = m.AvaliacaoDi,
+                Entregavel = m.Entregavel,
+                Objetivo = m.Objetivo,
+                Premissas = m.Premissas,
+                Restricoes = m.Restricoes,
+                Riscos = m.Riscos,
+                Responsavel = m.Responsavel,
+                Aprovador = m.Aprovador,
+                Consultado = m.Consultado,
+                Informado = m.Informado,
                 DivisaoId = m.DivisaoId,
                 OrigemMeta = m.OrigemMeta,
                 DataCumprimento = m.DataCumprimento,
@@ -117,6 +128,16 @@ namespace COPI_API.Controllers.ControllersMeta
                 Status = m.Status,
                 Tipo = m.Tipo,
                 Setor = m.Setor,
+                AvaliacaoDi = m.AvaliacaoDi,
+                Entregavel = m.Entregavel,
+                Objetivo = m.Objetivo,
+                Premissas = m.Premissas,
+                Restricoes = m.Restricoes,
+                Riscos = m.Riscos,
+                Responsavel = m.Responsavel,
+                Aprovador = m.Aprovador,
+                Consultado = m.Consultado,
+                Informado = m.Informado,
                 DivisaoId = m.DivisaoId,
                 OrigemMeta = m.OrigemMeta,
                 DataCumprimento = m.DataCumprimento,
@@ -178,7 +199,17 @@ namespace COPI_API.Controllers.ControllersMeta
                 OrigemMeta = dto.OrigemMeta,
                 DataCumprimento = dto.DataCumprimento,
                 DataInic = dto.DataInic,
-                DataFim = dto.DataFim
+                DataFim = dto.DataFim,
+                AvaliacaoDi = dto.AvaliacaoDi,
+                Entregavel = dto.Entregavel,
+                Objetivo = dto.Objetivo,
+                Premissas = dto.Premissas,
+                Restricoes = dto.Restricoes,
+                Riscos = dto.Riscos,
+                Responsavel = dto.Responsavel,
+                Aprovador = dto.Aprovador,
+                Consultado = dto.Consultado,
+                Informado = dto.Informado,
             };
             _context.Metas.Add(meta);
             await _context.SaveChangesAsync();
@@ -191,6 +222,16 @@ namespace COPI_API.Controllers.ControllersMeta
                 Tipo = meta.Tipo,
                 Setor = meta.Setor,
                 DivisaoId = meta.DivisaoId,
+                AvaliacaoDi = dto.AvaliacaoDi,
+                Entregavel = dto.Entregavel,
+                Objetivo = dto.Objetivo,
+                Premissas = dto.Premissas,
+                Restricoes = dto.Restricoes,
+                Riscos = dto.Riscos,
+                Responsavel = dto.Responsavel,
+                Aprovador = dto.Aprovador,
+                Consultado = dto.Consultado,
+                Informado = dto.Informado,
                 OrigemMeta = meta.OrigemMeta,
                 DataCumprimento = meta.DataCumprimento,
                 DataInic = meta.DataInic,
@@ -213,6 +254,16 @@ namespace COPI_API.Controllers.ControllersMeta
             meta.Status = dto.Status;
             meta.Tipo = dto.Tipo;
             meta.Setor = dto.Setor;
+            meta.AvaliacaoDi = dto.AvaliacaoDi;
+            meta.Entregavel = dto.Entregavel;
+            meta.Objetivo = dto.Objetivo;
+            meta.Premissas = dto.Premissas;
+            meta.Restricoes = dto.Restricoes;
+            meta.Riscos = dto.Riscos;
+            meta.Responsavel = dto.Responsavel;
+            meta.Aprovador = dto.Aprovador;
+            meta.Consultado = dto.Consultado;
+            meta.Informado = dto.Informado;
             meta.DivisaoId = dto.DivisaoId;
             meta.OrigemMeta = dto.OrigemMeta;
             meta.DataCumprimento = dto.DataCumprimento;
@@ -229,6 +280,18 @@ namespace COPI_API.Controllers.ControllersMeta
             return NoContent();
         }
 
+        // DELETE: api/Meta/5
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Gestor,GestorPIBP,GestorCFCI,GestorDPE,GestorDTA")]
+        public async Task<IActionResult> DeleteMeta(int id)
+        {
+            var meta = await _context.Metas.FindAsync(id);
+            if (meta == null)
+                return NotFound();
+            _context.Metas.Remove(meta);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
 
         // GET: api/Meta/media-progresso
         [HttpGet("media-progresso")]

@@ -9,7 +9,7 @@ namespace COPI_API.Models.MetaEntities
         public string? Descricao { get; set; }
         public string? Status { get; set; }
         public string? Tipo { get; set; }
-        public string? Setor { get; set; }
+        public string? Setor { get; set; } 
         public string? AvaliacaoDi { get; set; }
         public string? Entregavel { get; set; }
         public string? Objetivo { get; set; }
