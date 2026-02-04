@@ -4,6 +4,7 @@ using COPI_API.Models.PIBPEntities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace COPI_API.Controllers.ControllersPIBP
 {
@@ -233,6 +234,12 @@ namespace COPI_API.Controllers.ControllersPIBP
             resultado.Status = dto.Status;
             resultado.Prova = dto.Prova;
             resultado.AvaliacaoEscrita = dto.AvaliacaoEscrita;
+
+            resultado.UltimaAlteracaoPor =
+            User.FindFirst(ClaimTypes.Name)?.Value ??
+            User.FindFirst(ClaimTypes.Email)?.Value;
+
+            resultado.UltimaAlteracaoEm = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 

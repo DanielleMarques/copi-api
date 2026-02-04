@@ -16,5 +16,8 @@ namespace COPI_API.Models.PIBPEntities
         public DateTime DataRegistro { get; set; }
         public string? Prova { get; set; }
         public string? AvaliacaoEscrita { get; set; }
+
+        public string? UltimaAlteracaoPor { get; set; }
+        public DateTime? UltimaAlteracaoEm { get; set; }
     }
 }

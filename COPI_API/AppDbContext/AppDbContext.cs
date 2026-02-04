@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using COPI_API.Models.PIBPEntities;
-using COPI_API.Models.AdminEntities;
+﻿using COPI_API.Models.AdminEntities;
+using COPI_API.Models.DPEEntities;
 using COPI_API.Models.MetaEntities;
+using COPI_API.Models.PIBPEntities;
 using COPI_API.Models.PIGEEntities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 
@@ -11,6 +12,8 @@ namespace COPI_API
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+
+        public DbSet<Documento> Documentos { get; set; }
 
         // PIBP
         public DbSet<Ciclo> Ciclos { get; set; }
