@@ -251,6 +251,7 @@ namespace COPI_API.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, servidor.Id.ToString()),
+                new Claim(ClaimTypes.Name, servidor.Nome ?? string.Empty),
                 new Claim(ClaimTypes.Email, servidor.Email ?? string.Empty),
                 new Claim(ClaimTypes.Role, servidor.Role)
             };

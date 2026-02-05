@@ -39,7 +39,9 @@ namespace COPI_API.Controllers.ControllersPIBP
                 Status = r.Status ?? "N/A",
                 Prova = r.Prova ?? "",
                 AvaliacaoEscrita = r.AvaliacaoEscrita ?? "",
-                DataRegistro = r.DataRegistro
+                DataRegistro = r.DataRegistro,
+                UltimaAlteracaoPor = r.UltimaAlteracaoPor,
+                UltimaAlteracaoEm = r.UltimaAlteracaoEm
             }).ToList();
         }
 
@@ -66,7 +68,9 @@ namespace COPI_API.Controllers.ControllersPIBP
                 Status = resultado.Status ?? "N/A",
                 Prova = resultado.Prova ?? "",
                 AvaliacaoEscrita = resultado.AvaliacaoEscrita ?? "",
-                DataRegistro = resultado.DataRegistro
+                DataRegistro = resultado.DataRegistro,
+                UltimaAlteracaoPor = resultado.UltimaAlteracaoPor,
+                UltimaAlteracaoEm = resultado.UltimaAlteracaoEm
             };
         }
 
@@ -88,6 +92,10 @@ namespace COPI_API.Controllers.ControllersPIBP
                     r.Prova,
                     r.AvaliacaoEscrita,
                     r.DataRegistro,
+
+                    UltimaAlteracaoPor = r.UltimaAlteracaoPor,
+                    UltimaAlteracaoEm = r.UltimaAlteracaoEm,
+
                     CicloId = r.CicloId,
                     Ciclo = r.Ciclo!.Nome,
                     KPI = new

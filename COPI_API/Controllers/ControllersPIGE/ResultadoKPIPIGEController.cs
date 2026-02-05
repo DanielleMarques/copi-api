@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace COPI_API.Controllers.ControllersPIGE
@@ -45,7 +46,9 @@ namespace COPI_API.Controllers.ControllersPIGE
                 DataRegistro = r.DataRegistro,
                 Eixo = r.KPIPIGE?.Eixo?.Nome ?? "N/A",
                 Nivel = r.KPIPIGE?.Nivel?.Nome ?? "N/A",
-                CicloEncerrado = r.CicloPIGE?.Encerrado ?? false
+                CicloEncerrado = r.CicloPIGE?.Encerrado ?? false,
+                UltimaAlteracaoPor = r.UltimaAlteracaoPor,
+                UltimaAlteracaoEm = r.UltimaAlteracaoEm
             }));
         }
 
@@ -79,7 +82,9 @@ namespace COPI_API.Controllers.ControllersPIGE
                 DataRegistro = resultado.DataRegistro,
                 Eixo = resultado.KPIPIGE?.Eixo?.Nome ?? "N/A",
                 Nivel = resultado.KPIPIGE?.Nivel?.Nome ?? "N/A",
-                CicloEncerrado = resultado.CicloPIGE?.Encerrado ?? false
+                CicloEncerrado = resultado.CicloPIGE?.Encerrado ?? false,
+                UltimaAlteracaoPor = resultado.UltimaAlteracaoPor,
+                UltimaAlteracaoEm = resultado.UltimaAlteracaoEm
             });
         }
 
@@ -105,6 +110,10 @@ namespace COPI_API.Controllers.ControllersPIGE
                     r.DataRegistro,
                     CicloId = r.CicloPIGEId,
                     Ciclo = r.CicloPIGE.Nome,
+
+                    UltimaAlteracaoPor = r.UltimaAlteracaoPor,
+                    UltimaAlteracaoEm = r.UltimaAlteracaoEm,
+
                     KPI = new
                     {
                         r.KPIPIGE.Id,
@@ -262,6 +271,12 @@ namespace COPI_API.Controllers.ControllersPIGE
             resultado.Status = dto.Status;
             resultado.Prova = dto.Prova;
             resultado.AvaliacaoEscrita = dto.AvaliacaoEscrita;
+
+            resultado.UltimaAlteracaoPor =
+              User.FindFirst(ClaimTypes.Name)?.Value ??
+              User.FindFirst(ClaimTypes.Email)?.Value;
+
+            resultado.UltimaAlteracaoEm = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
 

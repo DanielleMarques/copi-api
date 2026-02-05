@@ -15,5 +15,7 @@ namespace COPI_API.Models.PIGEEntities
         public DateTime DataRegistro { get; set; }
         public string? Prova { get; set; }
         public string? AvaliacaoEscrita { get; set; }
+        public string? UltimaAlteracaoPor { get; set; }
+        public DateTime? UltimaAlteracaoEm { get; set; }
     }
 }

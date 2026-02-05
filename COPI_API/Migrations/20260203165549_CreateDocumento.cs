@@ -11,6 +11,28 @@ namespace COPI_API.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "UltimaAlteracaoPor",
+                table: "ResultadosKPIPIGE",
+                type: "varchar(255)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "UltimaAlteracaoEm",
+                table: "ResultadosKPIPIGE",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "UltimaAlteracaoPor",
+                table: "ResultadosKPI",
+                type: "varchar(255)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "UltimaAlteracaoEm",
+                table: "ResultadosKPI",
+                nullable: true);
+
             migrationBuilder.CreateTable(
                 name: "Documentos",
                 columns: table => new
@@ -44,6 +66,22 @@ namespace COPI_API.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+              name: "UltimaAlteracaoPor",
+              table: "ResultadosKPIPIGE");
+
+            migrationBuilder.DropColumn(
+                name: "UltimaAlteracaoEm",
+                table: "ResultadosKPIPIGE");
+
+            migrationBuilder.DropColumn(
+               name: "UltimaAlteracaoPor",
+               table: "ResultadosKPI");
+
+            migrationBuilder.DropColumn(
+                name: "UltimaAlteracaoEm",
+                table: "ResultadosKPI");
+
             migrationBuilder.DropTable(
                 name: "Documentos");
         }

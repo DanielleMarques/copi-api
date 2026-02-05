@@ -8,6 +8,8 @@ namespace COPI_API.Models.PIGEEntities.DTOS
         public string? Status { get; set; }
         public string? Prova { get; set; }
         public string? AvaliacaoEscrita { get; set; }
+        public string? UltimaAlteracaoPor { get; set; }
+        public DateTime? UltimaAlteracaoEm { get; set; }
     }
 
     public class ResultadoKPIPIGEOutputDTO
@@ -24,5 +26,7 @@ namespace COPI_API.Models.PIGEEntities.DTOS
         public DateTime DataRegistro { get; set; }
         public string? Prova { get; set; }
         public string? AvaliacaoEscrita { get; set; }
+        public string? UltimaAlteracaoPor { get; set; }
+        public DateTime? UltimaAlteracaoEm { get; set; }
     }
 }

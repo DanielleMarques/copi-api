@@ -11,5 +11,8 @@
         public string Prova { get; set; } = string.Empty;
         public string AvaliacaoEscrita { get; set; } = string.Empty;
         public DateTime DataRegistro { get; set; }
+
+        public string? UltimaAlteracaoPor { get; set; }
+        public DateTime? UltimaAlteracaoEm { get; set; }
     }
 }
