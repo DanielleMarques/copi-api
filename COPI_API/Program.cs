@@ -66,6 +66,8 @@ builder.Services.AddSwaggerGen(options =>
 // 5. Injeção de Serviços
 builder.Services.AddScoped<AvaliacaoService>();
 builder.Services.AddScoped<AvaliacaoServicePIGE>();
+builder.Services.AddScoped<PdfService>();
+builder.Services.AddScoped<DocumentoParserService>();
 
 // 6. Autenticação JWT
 var chaveJwt = builder.Configuration["Jwt:Key"] ?? "sua_chave_super_secreta";

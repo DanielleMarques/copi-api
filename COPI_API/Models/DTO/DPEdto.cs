@@ -29,7 +29,22 @@ namespace COPI_API.Models.DTO
         public class UploadDocumentoDto
         {
             public IFormFile? Arquivo { get; set; }
-            public TipoDocumento Tipo { get; set; } 
+            public TipoDocumento Tipo { get; set; }
+            public int DivisaoId { get; set; }
+            public TipoAfastamento TipoAfastamento { get; set; }
+        }
+
+        public class DocumentoProcessadoDto
+        {
+            public string? Ementa { get; set; }
+            public string? NumeroProcesso { get; set; }
+        }
+
+        public class DocumentoAgrupadoDto
+        {
+            public int Mes { get; set; }
+            public string TipoAfastamento { get; set; } = null!;
+            public List<DocumentoResponseDto> Documentos { get; set; } = new();
         }
 
         public class DocumentoResponseDto
@@ -39,8 +54,9 @@ namespace COPI_API.Models.DTO
             public string? NomeOriginal { get; set; }
             public Documento.TipoDocumento? Tipo { get; set; }
             public long Tamanho { get; set; }
-            public DateTime CriadoEm { get; set; }
+            public DateTimeOffset CriadoEm { get; set; }
             public string? CriadoPor { get; set; }
+            public string? NumeroSei { get; set; }
         }
 
 

@@ -18,6 +18,6 @@ namespace COPI_API.Models.PIBPEntities
         public string? AvaliacaoEscrita { get; set; }
 
         public string? UltimaAlteracaoPor { get; set; }
-        public DateTime? UltimaAlteracaoEm { get; set; }
+        public DateTimeOffset? UltimaAlteracaoEm { get; set; }
     }
 }

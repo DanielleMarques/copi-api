@@ -7,10 +7,8 @@ namespace COPI_API.Models.DPEEntities
     {
         public enum TipoAfastamento
         {
-            Licenca,
-            Ferias,
-            MissaoOficial,
-            Outro
+            InteresseInst,
+            InteressePessoal,
         }
 
         public enum StatusAfastamento
@@ -32,9 +30,8 @@ namespace COPI_API.Models.DPEEntities
         public int DeclaracaoPdfId { get; set; }
         public int ManifestacaoPdfId { get; set; }
         public bool PossuiInconsistencia { get; set; }
-        public int EmentarioId { get; set; }
         public Ementario? Ementario { get; set; }
-        public DateTime CriadoEm { get; set; }
+        public DateTimeOffset CriadoEm { get; set; }
         public string? CriadoPor { get; set; }
     }
 

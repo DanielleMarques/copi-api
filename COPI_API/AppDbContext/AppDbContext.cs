@@ -14,6 +14,8 @@ namespace COPI_API
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<Documento> Documentos { get; set; }
+        public DbSet<Afastamento> Afastamentos { get; set; }
+        public DbSet<Ementario> Ementarios { get; set; }
 
         // PIBP
         public DbSet<Ciclo> Ciclos { get; set; }
@@ -62,6 +64,12 @@ namespace COPI_API
             modelBuilder.Entity<UnidadeKPIPIGE>()
                 .HasMany(u => u.Servidores)
                 .WithMany();
+
+            modelBuilder.Entity<Afastamento>()
+                .HasOne(a => a.Ementario)
+                .WithOne(e => e.Afastamento)
+                .HasForeignKey<Ementario>(e => e.AfastamentoId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -10,6 +10,6 @@
         public string AvaliacaoEscrita { get; set; } = string.Empty;
 
         public string? UltimaAlteracaoPor { get; set; }
-        public DateTime? UltimaAlteracaoEm { get; set; }
+        public DateTimeOffset? UltimaAlteracaoEm { get; set; }
     }
 }

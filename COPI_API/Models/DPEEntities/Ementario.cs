@@ -6,7 +6,8 @@
         public int AfastamentoId { get; set; }
         public Afastamento? Afastamento { get; set; }
         public string? EmentaResumo { get; set; }
+        public string? NumeroSei { get; set; }
         public string? Fundamentacao { get; set; }
-        public DateTime CriadoEm { get; set; }
+        public DateTimeOffset CriadoEm { get; set; }
     }
 }

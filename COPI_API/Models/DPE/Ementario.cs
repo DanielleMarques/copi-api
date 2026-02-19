@@ -25,5 +25,6 @@
         public string? IndicioConflitoDeInteresses { get; set; }
         public string? Ementas { get; set; }
         public string? Observacoes { get; set; }
+        public string? NumeroSei { get; set; }
     }
 }
