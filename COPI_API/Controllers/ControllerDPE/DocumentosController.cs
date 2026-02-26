@@ -1,13 +1,15 @@
 ﻿using COPI_API.Models.DPEEntities;
 using COPI_API.Models.DTO;
+using COPI_API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using COPI_API.Services;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using UglyToad.PdfPig;
 using static COPI_API.Models.DPEEntities.Documento;
 using static COPI_API.Models.DTO.DPEdto;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace COPI_API.Controllers.ControllerEmentario
 {
@@ -67,6 +69,20 @@ namespace COPI_API.Controllers.ControllerEmentario
 
             string? numeroProcesso = null;
 
+            var dataAssinaturaStr = _parserService.ExtrairDataAssinaturaFinal(textoExtraido);
+
+            DateTime? dataAssinatura = null;
+
+            if (DateTime.TryParseExact(
+                    dataAssinaturaStr,
+                    "dd/MM/yyyy",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var dataConvertida))
+            {
+                dataAssinatura = dataConvertida;
+            }
+
             if (dto.Tipo == TipoDocumento.Manifestacao && string.IsNullOrEmpty(ementa))
             {
                 // Se entrar aqui, o problema é o REGEX ou o TEXTO do PDF que veio sujo
@@ -109,10 +125,11 @@ namespace COPI_API.Controllers.ControllerEmentario
                 CriadoEm = DateTime.UtcNow,
                 CriadoPor = User.Identity?.Name ?? "Sistema",
                 Tipo = dto.Tipo,
-                TextoExtraido = textoExtraido
+                TextoExtraido = textoExtraido,
+                DataAssinatura = dataAssinatura
             };
 
-            if (ementa != null)
+            if (!string.IsNullOrEmpty(ementa) || !string.IsNullOrEmpty(numeroSei))
             {
                 var ementario = new Ementario
                 {
@@ -210,13 +227,13 @@ namespace COPI_API.Controllers.ControllerEmentario
             if (dataInicio.HasValue)
             {
                 var inicio = dataInicio.Value.Date;
-                query = query.Where(d => d.CriadoEm >= inicio);
+                query = query.Where(d => d.DataAssinatura >= inicio);
             }
 
             if (dataFim.HasValue)
             {
                 var fimDoDia = dataFim.Value.Date.AddDays(1).AddTicks(-1);
-                query = query.Where(d => d.CriadoEm <= fimDoDia);
+                query = query.Where(d => d.DataAssinatura <= fimDoDia);
             }
 
             var documentos = await query
@@ -227,16 +244,34 @@ namespace COPI_API.Controllers.ControllerEmentario
         }
 
         [HttpGet("organizado")]
-        public async Task<IActionResult> GetOrganizado()
+        public async Task<IActionResult> GetOrganizado(
+            [FromQuery] DateTime? dataInicio,
+            [FromQuery] DateTime? dataFim)
         {
-            var docs = await _context.Documentos
+            var query = _context.Documentos
                 .Include(d => d.Divisao)
                 .Include(d => d.Afastamento)
                     .ThenInclude(a => a.Ementario)
-                .ToListAsync();
+                .AsQueryable();
 
+            if (dataInicio.HasValue)
+            {
+                var inicio = dataInicio.Value.Date;
+                query = query.Where(d => d.DataAssinatura >= inicio);
+            }
+
+            if (dataFim.HasValue)
+            {
+                var fimDoDia = dataFim.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(d => d.DataAssinatura <= fimDoDia);
+            }
+            var docs = await query.ToListAsync();
             var resultado = docs
-                .GroupBy(d => new { d.CriadoEm.Year, d.CriadoEm.Month })
+                .Where(d => d.DataAssinatura != null)
+                .GroupBy(d => new {
+                    d.DataAssinatura!.Value.Year,
+                    d.DataAssinatura!.Value.Month
+                })
                 .Select(m => new
                 {
                     ano = m.Key.Year,
@@ -251,14 +286,18 @@ namespace COPI_API.Controllers.ControllerEmentario
                                      nomeOriginal = d.NomeOriginal,
                                      criadoEm = d.CriadoEm,
                                      tamanho = d.Tamanho,
-                                     divisaoNome = d.Divisao != null
-                                         ? d.Divisao.Nome
-                                         : null,
-                                     ementaResumo = d.Afastamento!.Ementario != null
-                                         ? d.Afastamento.Ementario.EmentaResumo
-                                         : null,
+                                     tipo = (int)d.Tipo,
+                                     divisaoNome = d.Divisao?.Nome,
+                                     ementaResumo = d.Afastamento?.Ementario?.EmentaResumo,
+                                     numeroSei = d.Afastamento?.Ementario?.NumeroSei,
 
-                                     numeroSei = d.Afastamento?.Ementario?.NumeroSei
+                                     // Extração da data de assinatura (Wellington) - Geral para todos os tipos
+                                     dataAssinatura = _parserService.ExtrairDataAssinaturaFinal(d.TextoExtraido),
+
+                                     // Processamento específico de campos da Declaração
+                                     dadosDeclaracao = d.Tipo == Documento.TipoDocumento.DeclaracaoMotivacao
+                                         ? _parserService.ExtrairDadosCompletosDeclaracao(d.TextoExtraido)
+                                         : null,
                                  })
                              })
                 });

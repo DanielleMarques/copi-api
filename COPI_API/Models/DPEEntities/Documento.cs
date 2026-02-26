@@ -16,7 +16,7 @@ namespace COPI_API.Models.DPEEntities
         public string? NomeArmazenado { get; set; }
         public TipoDocumento Tipo { get; set; } 
         public string? CaminhoArquivo { get; set; }
-        public string? TextoExtraido { get; set; } // OCR / PDF Reader
+        public string? TextoExtraido { get; set; } = null;
         public bool Anonimizado { get; set; }
         public string ContentType { get; set; } = null!;
         public long Tamanho { get; set; }
@@ -26,5 +26,6 @@ namespace COPI_API.Models.DPEEntities
         public Afastamento? Afastamento { get; set; }
         public int DivisaoId { get; set; }
         public Divisao? Divisao { get; set; }
+        public DateTime? DataAssinatura { get; set; }
     }
 }

@@ -57,8 +57,29 @@ namespace COPI_API.Models.DTO
             public DateTimeOffset CriadoEm { get; set; }
             public string? CriadoPor { get; set; }
             public string? NumeroSei { get; set; }
+            public DadosDeclaracaoDto? DadosDeclaracao { get; set; }
+            public DateTime? DataAssinatura { get; set; }
         }
 
+        public class DadosDeclaracaoDto
+        {
+            public string? NomeCompleto { get; set; }
+            public string? SituacaoFuncional { get; set; }
+            public string? RF { get; set; }
+            public string? Cargo { get; set; }
+            public string? Orgao { get; set; }
+            public string? TipoEvento { get; set; }
+            public string? NomeEvento { get; set; }
+            public string? DataInicioFim { get; set; }
+            public string? DataIdaVolta { get; set; }
+            public string? DescricaoEvento { get; set; }
+            public string? Cidade { get; set; }
+            public string? Pais { get; set; }
+            public string? TipoParticipação { get; set; }
+            public string? Organizador { get; set; }
+            public string? Patrocinador { get; set; }
+            public string? MotivacaoEvento { get; set; }
+        }
 
         public class ComparacaoResultadoDto
         {

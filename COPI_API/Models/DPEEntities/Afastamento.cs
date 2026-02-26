@@ -1,5 +1,4 @@
-﻿using COPI_API.Models.DPE;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace COPI_API.Models.DPEEntities
 {
